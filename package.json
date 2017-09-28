@@ -1,0 +1,39 @@
+{
+  "name": "slackbot",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "ssh://git@github.com/Tosuke/slackbot.git",
+  "author": "Tosuke <tasukeprg@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "watch": "run-s build watch-run",
+    "watch-run": "run-p watch:*",
+    "watch:node": "nodemon dist/index.js",
+    "watch:ts": "tsc --watch",
+    "fmt": "run-p fmt:*",
+    "fmt:json": "prettier --parser=json --write './*.json'",
+    "fmt:ts": "prettier --parser=typescript --write 'src/**/*.ts'",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": ["prettier --parser=typescript --write", "git add"],
+    "*.json": ["prettier --parser=json --write", "git add"]
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "dotenv": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^4.0.1",
+    "@types/node": "^8.0.31",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.2.3",
+    "node-dev": "^3.1.3",
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.1",
+    "prettier": "^1.7.2",
+    "typescript": "^2.5.3"
+  }
+}
