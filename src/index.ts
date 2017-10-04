@@ -1,8 +1,11 @@
 import { config } from 'dotenv'
 config()
-import * as slack from './slack'
 
-slack.api('chat.postMessage', {
-  channel: '#bot-dev',
-  text: 'hogehogepiyopiyo',
-})
+import { slackEvent } from './slack/slack'
+main().catch(e => console.log(e))
+
+async function main() {
+  slackEvent.on('message', res => {
+    console.log(res)
+  })
+}
