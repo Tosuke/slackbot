@@ -28,10 +28,7 @@ export const webApiClient: SlackWebApiClient = (() => {
   })
 
   return (method: string, params?: object) =>
-    axiosClient
-      .post(`/${method}`, params)
-      .then(r => r.data)
-      .catch(err => Promise.reject(err.description || ''))
+    axiosClient.post(`/${method}`, params).then(r => r.data)
 
   function toString(a: any): string {
     if (typeof a === 'string') {
