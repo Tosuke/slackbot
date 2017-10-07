@@ -10,11 +10,11 @@ interface Events {
   event: Event
   message: MessageEvent
 }
-
 export class SlackEventEmitter extends TypedEventEmitter<Events> {}
 
-import { webApiClient, events, usersById, conversationsById } from './slackimpl'
-export const slackApiClient = webApiClient
-export const slackEvent = events
-export const slackUsersList = usersById
-export const slackConversationsList = conversationsById
+import * as impl from './slackimpl'
+export const initialize = impl.initialize
+export const slackApiClient = impl.webApiClient
+export const slackEvent = impl.events
+export const slackUsersList = impl.usersById
+export const slackConversationsList = impl.conversationsById

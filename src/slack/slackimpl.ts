@@ -42,10 +42,23 @@ export const webApiClient: SlackWebApiClient = (() => {
   }
 })()
 
+export function initialize(): Promise<any> {
+  return Promise.all([
+    initilizeEvent().then(() =>
+      console.info('[INFO] Success to connect RTM API')
+    ),
+    initializeConversation().then(() =>
+      console.info('[INFO] Success to pull conversations')
+    ),
+    initializeUser().then(() => console.info('[INFO] Success to pull users')),
+    initializeEmoji().then(() => console.info('[INFO] Success to pull emojis')),
+  ])
+}
+
 export const events: SlackEventEmitter = new SlackEventEmitter()
-initilizeEvent()
+/*initilizeEvent()
   .then(() => console.info('[INFO]Succeeded to connect to RTM API'))
-  .catch(err => console.error(err))
+  .catch(err => console.log(err))*/
 
 import { Event } from './model/events/event'
 async function initilizeEvent() {
@@ -90,9 +103,9 @@ async function initilizeEvent() {
 
 import User from './model/user'
 export const usersById: Map<string, User> = new Map()
-initializeUser()
+/*initializeUser()
   .then(() => console.info('[INFO]Succeeded to pull users'))
-  .catch(err => console.error(err))
+  .catch(err => console.log(err))*/
 
 async function initializeUser() {
   const { members } = await webApiClient('users.list')
@@ -114,9 +127,9 @@ async function initializeUser() {
 
 import Conversation from './model/conversation'
 export const conversationsById: Map<string, Conversation> = new Map()
-initializeConversation()
+/*initializeConversation()
   .then(() => console.info('[INFO]Succeeded to pull conversations'))
-  .catch(err => console.error(err))
+  .catch(err => console.log(err))*/
 
 async function initializeConversation() {
   const { channels } = await webApiClient('conversations.list')
@@ -132,6 +145,61 @@ async function initializeConversation() {
     }
     if (e.type === 'channel_deleted') {
       conversationsById.delete(e.channel)
+    }
+  })
+}
+
+export const emojisByName: Map<string, string> = new Map()
+/*initializeEmoji()
+  .then(() => console.info('[INFO]Succeeded to pull emojis'))
+  .catch(err => console.log(err))*/
+
+async function initializeEmoji() {
+  function set(name: string, value: string) {
+    if (value.startsWith('alias:')) {
+      const resolved = /alias:(.*)/.exec(value) || []
+      set(name, emojisByName.get(resolved[1]) || '')
+    } else {
+      emojisByName.set(name, value)
+    }
+  }
+
+  const emojiResolvers = {
+    noto: code =>
+      `https://noto-website.storage.googleapis.com/emoji/emoji_u${code.replace(
+        '-',
+        '_'
+      )}.png`,
+    twitter: code => `https://twemoji.maxcdn.com/2/72x72/${code}.png`,
+    emojione: code =>
+      `https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/png/${code}.png`,
+  }
+
+  const emojiList = await axios
+    .get(
+      'https://gist.githubusercontent.com/kjohnson/cf3a03e3baf3ec5762e0442e30c1718a/raw/bcfca250d6c234bcb0b119a44a3080c80666f0ca/slack-emoji-list.json'
+    )
+    .then(r => r.data)
+
+  const resolver = emojiResolvers[process.env.NODE_EMOJI_TYPE || 'twitter']
+  for (const [name, code] of Object.entries(emojiList)) {
+    emojisByName.set(name, resolver(code))
+  }
+
+  const { emoji: emojis } = await webApiClient('emoji.list')
+  for (const [name, value] of Object.entries(emojis)) {
+    set(name, value)
+  }
+
+  events.on('event', e => {
+    if (e.type === 'emoji_changed') {
+      if (e.subtype === 'add') {
+        set(e.name, e.value)
+      } else {
+        for (const name of e.names) {
+          emojisByName.delete(name)
+        }
+      }
     }
   })
 }
