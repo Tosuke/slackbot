@@ -6,50 +6,41 @@ export interface Command {
   arg: string
 }
 
+export type FilterFunction = (...args) => string
+
 import { slackApiClient } from './slack/slack'
+import { format } from 'util'
 
 export async function callCommand(
   command: Command,
   user: string,
   channel: string
 ): Promise<void> {
-  if (command.func.name === 'eval') {
-    const res = secureEval(command.arg)
-    if (res.err) {
+  let res: string | undefined = undefined
+  try {
+    if (command.func.name === 'evaljs') {
+      res = evalCommand(command.arg)
+    }
+
+    if (res) {
       await slackApiClient('chat.postMessage', {
-        channel: channel,
-        text: res.err.toString(),
-        usename: 'tskbot',
-      })
-    } else {
-      await slackApiClient('chat.postMessage', {
-        channel: channel,
-        text: encodeURIComponent(
-          (() =>
-            typeof res.value === 'string'
-              ? res.value
-              : JSON.stringify(res.value, null, '\t'))()
-        ),
-        usename: 'tskbot',
+        channel,
+        username: 'tskbot',
+        text: res,
       })
     }
+  } catch (err) {
+    await slackApiClient('chat.postMessage', {
+      channel,
+      username: 'tskbot',
+      text: format(err),
+    })
   }
 }
 
-import * as vm from 'vm'
-function secureEval(expr: string): { value: any; err: Error | null } {
-  const sandbox: any = {
-    value: undefined,
-    err: null,
-    src: expr,
-  }
-  const context = vm.createContext(sandbox)
-  try {
-    vm.runInContext(`value=(${expr});`, context, {
-      timeout: 1000,
-    })
-  } catch (err) {
-    sandbox.err = err
-  }
-  return sandbox
+import { secureEval } from './vm/secure_eval'
+
+function evalCommand(arg: string): string {
+  const tmp = secureEval(arg)
+  return tmp.then(a => format(a)).catch(e => e.toString()).value || 'no value'
 }

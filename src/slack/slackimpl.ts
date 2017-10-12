@@ -13,7 +13,7 @@ export const webApiClient: SlackWebApiClient = (() => {
       data =>
         Object.entries({ ...data, token: process.env.NODE_SLACKAPI_TOKEN })
           .map(([k, v]) => [k, toString(v)])
-          .map(([k, v]) => `${k}=${v}`)
+          .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
           .join('&'),
     ],
   })

@@ -67,7 +67,7 @@ export default function parse(text: string): Command | null {
   }
 }
 
-function tryParse(text: string): boolean {
+export function tryParse(text: string): boolean {
   try {
     acorn.parse(text)
     return true
