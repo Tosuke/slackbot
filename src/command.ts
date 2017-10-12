@@ -3,8 +3,7 @@ export interface Command {
     name: string
     param: string
   }
-  args: Array<string>
-  argRaw: string
+  arg: string
 }
 
 import { slackApiClient } from './slack/slack'
@@ -15,7 +14,7 @@ export async function callCommand(
   channel: string
 ): Promise<void> {
   if (command.func.name === 'eval') {
-    const res = secureEval(command.argRaw)
+    const res = secureEval(command.arg)
     if (res.err) {
       await slackApiClient('chat.postMessage', {
         channel: channel,

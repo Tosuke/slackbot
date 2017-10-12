@@ -46,44 +46,9 @@ const command = alt(
   }))
 )
 
-;(a =>
-  a
-    .toString()
-    .split('')
-    .map(
-      b =>
-        [
-          ':zero:',
-          ':one:',
-          ':two:',
-          ':three:',
-          ':four:',
-          ':five:',
-          ':six:',
-          ':seven:',
-          ':eight:',
-          ':nine:',
-        ][eval(b)]
-    )
-    .join(''))(5000) + ':yen_::hosi::ii:'
-
-const arg = seq(
-  regex(/\s*/),
-  alt(
-    alt(
-      str,
-      seq(string('`'), regex(/((\\.)|([^`]))*/), string('`')).map(a =>
-        a.join('')
-      )
-    ).map(a => a.slice(1, a.length - 1)),
-    regex(/[^\s]+/)
-  ),
-  regex(/\s*/)
-).map(a => a[1])
-
-const parser = seq(command, regex(/:\s+/), arg.many()).map(a => ({
+const parser = seq(command, regex(/:\s*/), regex(/.*/)).map(a => ({
   func: a[0],
-  args: a[2],
+  arg: a[2],
 }))
 
 import { Command } from './command'
@@ -93,9 +58,7 @@ export default function parse(text: string): Command | null {
   if (parsed.status) {
     const value = parsed.value
     if (tryParse('f' + value.func.param)) {
-      const len = value.func.name.length + value.func.param.length
-      value.func.param = value.func.param === '' ? '()' : value.func.param
-      return { ...value, argRaw: text.slice(len + 1, text.length) }
+      return value
     } else {
       return null
     }
