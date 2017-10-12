@@ -1,4 +1,4 @@
-import { alt, seq, regex, string, lazy } from 'parsimmon'
+import { alt, seq, regex, string, lazy, any } from 'parsimmon'
 import * as babylon from 'babylon'
 
 const str = alt(
@@ -46,7 +46,11 @@ const command = alt(
   }))
 )
 
-const parser = seq(command, regex(/:\s*/), regex(/.*/)).map(a => ({
+const parser = seq(
+  command,
+  regex(/:\s*/),
+  any.many().map(a => a.join(''))
+).map(a => ({
   func: a[0],
   arg: a[2].trim(),
 }))
