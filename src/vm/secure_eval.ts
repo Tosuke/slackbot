@@ -7,7 +7,10 @@ export function secureEval(
   thisobj: any = {}
 ): UntrustedValue<any> {
   try {
-    const result = acorn.parse(source, { allowReturnOutsideFunction: true })
+    const result = acorn.parse(source, {
+      allowReturnOutsideFunction: true,
+      ecmaVersion: 8,
+    })
     const type = result.body[0].type
     if (type === 'BlockStatement') {
       return runBlock(source, thisobj)
