@@ -53,9 +53,6 @@ export function initialize(): Promise<any> {
 }
 
 export const events: SlackEventEmitter = new SlackEventEmitter()
-/*initilizeEvent()
-  .then(() => console.info('[INFO]Succeeded to connect to RTM API'))
-  .catch(err => console.log(err))*/
 
 import { Event } from './model/events/event'
 async function initilizeEvent() {
@@ -100,9 +97,6 @@ async function initilizeEvent() {
 
 import User from './model/user'
 export const usersById: Map<string, User> = new Map()
-/*initializeUser()
-  .then(() => console.info('[INFO]Succeeded to pull users'))
-  .catch(err => console.log(err))*/
 
 async function initializeUser() {
   const { members } = await webApiClient('users.list')
@@ -124,9 +118,6 @@ async function initializeUser() {
 
 import Conversation from './model/conversation'
 export const conversationsById: Map<string, Conversation> = new Map()
-/*initializeConversation()
-  .then(() => console.info('[INFO]Succeeded to pull conversations'))
-  .catch(err => console.log(err))*/
 
 async function initializeConversation() {
   const { channels } = await webApiClient('conversations.list')
@@ -147,9 +138,6 @@ async function initializeConversation() {
 }
 
 export const emojisByName: Map<string, string> = new Map()
-/*initializeEmoji()
-  .then(() => console.info('[INFO]Succeeded to pull emojis'))
-  .catch(err => console.log(err))*/
 
 async function initializeEmoji() {
   function set(name: string, value: string) {
