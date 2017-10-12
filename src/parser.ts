@@ -1,5 +1,5 @@
 import { alt, seq, regex, string, lazy } from 'parsimmon'
-import * as acorn from 'acorn'
+import * as babylon from 'babylon'
 
 const str = alt(
   seq(string('"'), regex(/((\\.)|([^"]))*/), string('"')),
@@ -57,7 +57,7 @@ export default function parse(text: string): Command | null {
   const parsed = parser.parse(text)
   if (parsed.status) {
     const value = parsed.value
-    if (tryParse('f' + value.func.param)) {
+    if (tryParseExpression('f' + value.func.param)) {
       return value
     } else {
       return null
@@ -67,9 +67,31 @@ export default function parse(text: string): Command | null {
   }
 }
 
-export function tryParse(text: string): boolean {
+export function parseJsProgram(code: string): any {
+  return babylon.parse(code, {
+    allowReturnOutsideFunction: true,
+    plugins: ['objectRestSpread'],
+  })
+}
+
+export function parseJsExpression(code: string): any {
+  return babylon.parseExpression(code, {
+    plugins: ['objectRestSpread'],
+  })
+}
+
+export function tryParseProgram(code: string): boolean {
   try {
-    acorn.parse(text)
+    parseJsProgram(code)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+export function tryParseExpression(code: string): boolean {
+  try {
+    parseJsExpression(code)
     return true
   } catch (e) {
     return false

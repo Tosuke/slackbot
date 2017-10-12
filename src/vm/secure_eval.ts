@@ -1,5 +1,5 @@
 import * as vm from 'vm'
-import * as acorn from 'acorn'
+import { tryParseProgram, tryParseExpression } from '../parser'
 import UntrustedValue from './untrusted_value'
 
 export function secureEval(
@@ -7,15 +7,10 @@ export function secureEval(
   thisobj: any = {}
 ): UntrustedValue<any> {
   try {
-    const result = acorn.parse(source, {
-      allowReturnOutsideFunction: true,
-      ecmaVersion: 8,
-    })
-    const type = result.body[0].type
-    if (type === 'BlockStatement') {
-      return runBlock(source, thisobj)
-    } else if (type === 'ExpressionStatement') {
+    if (tryParseExpression(source)) {
       return runExpr(source, thisobj)
+    } else if (tryParseProgram(source)) {
+      return runProgram(source, thisobj)
     } else {
       return new UntrustedValue<any>(
         null,
@@ -46,14 +41,14 @@ function runExpr(source: string, thisobj: any = {}): UntrustedValue<any> {
   }
 }
 
-function runBlock(source: string, thisobj: any = {}): UntrustedValue<any> {
+function runProgram(source: string, thisobj: any = {}): UntrustedValue<any> {
   let sandbox: any = {
     __value__: undefined,
     __thisObj__: { ...thisobj },
   }
   try {
     vm.runInContext(
-      `__value__=(function()${source}).call(__thisObj__)`,
+      `__value__=(function(){${source}}).call(__thisObj__)`,
       vm.createContext(sandbox),
       {
         timeout: 2000,

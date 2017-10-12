@@ -2,11 +2,15 @@
 # yarn lockfile v1
 
 
-"@types/acorn@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@types/acorn/-/acorn-4.0.2.tgz#5c37dade857a53c14258c914d43e634076aec3fd"
+"@types/babel-types@*":
+  version "6.25.1"
+  resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-6.25.1.tgz#ce8f126a4403e11e1b0033a424f11638afac7889"
+
+"@types/babylon@^6.16.2":
+  version "6.16.2"
+  resolved "https://registry.yarnpkg.com/@types/babylon/-/babylon-6.16.2.tgz#062ce63b693d9af1c246f5aedf928bc9c30589c8"
   dependencies:
-    "@types/estree" "*"
+    "@types/babel-types" "*"
 
 "@types/bson@*":
   version "1.0.4"
@@ -19,10 +23,6 @@
   resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-4.0.1.tgz#a0db2a2d25b5c01ff387f07c4f1e002d592873e8"
   dependencies:
     "@types/node" "*"
-
-"@types/estree@*":
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.37.tgz#48949c1516d46139c1e521195f9e12993b69d751"
 
 "@types/mongodb@*":
   version "2.2.12"
@@ -55,10 +55,6 @@
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
-
-acorn@^5.1.2:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.2.tgz#911cb53e036807cf0fa778dc5d370fbd864246d7"
 
 ajv@^4.9.1:
   version "4.11.8"
@@ -201,6 +197,10 @@ axios@^0.16.2:
   dependencies:
     follow-redirects "^1.2.3"
     is-buffer "^1.1.5"
+
+babylon@v7.0.0-beta.27:
+  version "7.0.0-beta.27"
+  resolved "https://registry.yarnpkg.com/babylon/-/babylon-7.0.0-beta.27.tgz#b6edd30ef30619e2f630eb52585fdda84e6542cd"
 
 balanced-match@^1.0.0:
   version "1.0.0"

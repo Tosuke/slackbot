@@ -22,15 +22,15 @@
     "*.json": ["prettier --parser=json --write", "git add"]
   },
   "dependencies": {
-    "acorn": "^5.1.2",
     "axios": "^0.16.2",
+    "babylon": "v7.0.0-beta.27",
     "dotenv": "^4.0.0",
     "mongoose": "^4.12.0",
     "parsimmon": "^1.6.2",
     "ws": "^3.2.0"
   },
   "devDependencies": {
-    "@types/acorn": "^4.0.2",
+    "@types/babylon": "^6.16.2",
     "@types/dotenv": "^4.0.1",
     "@types/mongoose": "^4.7.23",
     "@types/node": "^8.0.31",
