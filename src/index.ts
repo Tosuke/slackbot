@@ -10,17 +10,28 @@ async function main() {
 
   slackEvent.on('message', async res => {
     if (res.subtype === undefined) {
-      const command = parse(unescape(res.text))
-      if (command === null) return
-      console.log(command)
-      await callCommand(command, res.user, res.channel)
+      await slackCallCommand(res)
     }
   })
 }
 
+import { MessageCreatedEvent } from './slack/model/events/message'
+
+async function slackCallCommand(mes: MessageCreatedEvent) {
+  let command = parse(unescape(mes.text))
+  if (command === null) return
+
+  if (command.arg.startsWith('```') && command.arg.endsWith('```')) {
+    command.arg = command.arg.slice(3, command.arg.length - 3)
+  }
+
+  console.log(command)
+  await callCommand(command, mes.user, mes.channel)
+}
+
 function unescape(text: string): string {
   return text
-    .replace('&amp;', '&')
-    .replace('&lt;', '<')
-    .replace('&gt;', '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
 }

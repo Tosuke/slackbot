@@ -48,7 +48,7 @@ const command = alt(
 
 const parser = seq(command, regex(/:\s*/), regex(/.*/)).map(a => ({
   func: a[0],
-  arg: a[2],
+  arg: a[2].trim(),
 }))
 
 import { Command } from './command'
