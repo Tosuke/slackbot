@@ -1,5 +1,4 @@
-import { config } from 'dotenv'
-if (process.env.NODE_ENV !== 'production') config()
+if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 import { slackEvent, initialize } from './slack/slack'
 import parse from './parser'
