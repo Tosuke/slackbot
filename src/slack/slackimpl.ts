@@ -56,21 +56,30 @@ export const events: SlackEventEmitter = new SlackEventEmitter()
 
 import { Event } from './model/events/event'
 async function initilizeEvent() {
-  const { url } = await webApiClient('rtm.start')
-  const socket = new WebSocket(url)
-  await new Promise((res, rej) => {
-    socket.once('message', data => {
-      const mes = JSON.parse(data.toString())
-      if (mes.type === 'hello') {
-        socket.removeAllListeners()
-        res()
-      }
-    })
+  async function connect() {
+    const { url } = await webApiClient('rtm.start')
+    const socket = new WebSocket(url)
+    await new Promise((res, rej) => {
+      socket.once('message', data => {
+        const mes = JSON.parse(data.toString())
+        if (mes.type === 'hello') {
+          socket.removeAllListeners()
+          res()
+        }
+      })
 
-    socket.once('error', err => {
-      socket.removeAllListeners()
-      rej(err)
+      socket.once('error', err => {
+        socket.removeAllListeners()
+        rej(err)
+      })
     })
+    return socket
+  }
+
+  let socket = await connect()
+  socket.on('close', async () => {
+    // reconnect
+    socket = await connect()
   })
 
   socket.on('message', data => {
